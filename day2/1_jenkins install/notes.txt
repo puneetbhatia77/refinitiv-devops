@@ -1,0 +1,32 @@
+Install Jenkins
+Install suggested plugins
+Manage Jenkins
+	- Configure Systems 
+	- Configure Global Security
+	- Global Tool Configuration   - maven install automatically
+
+1. helloworld job
+-------------------------------
+
+2. javademo job
+#to build java, install JDK
+
+   apt-get install -y openjdk-8-jdk
+   export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+   
+   - Global Tool Configuration   - configure JDK
+
+
+git URL : https://github.com/puneetbhatia77/helloworldjavatest.git
+Build 
+   execute shell : 
+           javac helloworldjavatest.java
+           java  helloworldjavatest
+
+2. Jenkins pipeline : refer Jenkins-pipeline-project-4.pptx
+
+
+   
+
+
+

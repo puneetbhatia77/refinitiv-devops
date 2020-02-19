@@ -1,0 +1,38 @@
+
+create folder ubuntu64-10sept under E:\VM\vagrant\images
+
+#default base box
+
+vagrant init 
+vagrant up             
+===================================================
+
+#bento ubuntu-16.04 box
+
+vagrant init bento/ubuntu-16.04
+vagrant up		# import bento/ubuntu-16.04 from vagrant cloud https://app.vagrantup.com/
+
+
+vagrant ssh
+sudo vi /etc/hostname
+ubuntu64
+
+sudo vi /etc/network/interfaces
+        ...
+	auto eth1
+	iface eth1 inet static
+	address 192.168.56.101
+	netmask 255.255.255.0
+
+
+stop VM and add Host only network from oracle Virtual Box Manager. And restart VM from manager GUI.
+ifconfig -> will show eth1 as well.
+
+Ping from VM to IPV4 
+Ping from host to VM
+--------------------------------------
+
+https://cloud-images.ubuntu.com/releases/xenial/release/
+
+
+

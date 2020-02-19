@@ -1,0 +1,35 @@
+Jenkins-> new JunitDemo
+git Repossitory URL : https://github.com/puneetbhatia77/my_repos
+Build -> Invoke top-level Maven targets
+Maven Version : myMaven if multiple versions available)
+Goals    :  clean install
+POM : maven_first_example/my-app
+
+Post-build Actions -> Publish JUnit test result report
+Test report XMLs :  **/TEST*.xml
+
+
+Email notification configuration.
+
+Manage Jenkins -> Configure System
+
+ Content Token Reference
+		
+E-mail Notification
+SMTP server name : smtp.gmail.com
+Select CheckBox : Use SMTP Authentication 
+User name: user_email_id@gmail.com
+Password: *****
+Use SSL : Checked
+SMTP Port: 465
+
+Test e-mail recipient :  user_email_id@gmail.com  -> Test configuration
+If fails then goto "https://myaccount.google.com/lesssecureapps", Allow less secure apps: ON and then try again.
+Sould be connected successfully.
+
+Also try in case still does not work [https://security.google.com/settings/security/apppasswords]
+
+Now goto JunitDemo job
+
+
+E-mail Notification -> Recipients -> Send e-mail for every unstable build.  [E-mail will be sent when a build fails, becomes unstable (test fails) or returns to stable.]

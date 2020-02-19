@@ -1,0 +1,82 @@
+In Ubuntu VM
+
+1. Check if git client is installed by running 'git' command else install.
+2. Create github account, if don't have already.
+3. Login to github account.
+4. Create repo "demo".
+	mkdir github_demo
+        cd github_demo/
+        git clone https://github.com/puneetbhatia77/demo.git
+	echo "# demo" >> README.md
+        git init
+        git add README.md
+        git commit -m "first commit"
+        git remote add origin https://github.com/puneetbhatia77/demo.git  #( not required in this case) 
+        git push -u origin master
+           username - puneetbhatia77
+	   password - *****
+
+5. Refresh repo.
+-----------------------------------------------
+
+Other Git commands
+
+git branch
+vi testfile   -> "This is testfile at master branch"
+git add testfile
+git commit -m "initial checkin for test file"
+git push origin master
+
+
+git checkout -b mybranch
+git branch
+vi testfile -> "This is testfile a mybranch"
+git add testfile
+git commit -m "initial checkin for test file in mybranch"
+git push origin master
+git checkout -     # switch back to master
+git merge --help
+git merge mybranch
+git status
+git push origin master
+git branch
+
+# Now update testfile manually at github - "initial checkin for test file by other user"
+vi testfile -> "initial checkin for test file by me"
+
+git add testfile
+git commit -m "initial checkin for test file by me"
+git push origin master   - "It will ask first to pull repo for latest changes"
+git pull        -  mege conflict that needs to be resolved manually
+vi testfile     - resolve merge conflicts
+git status
+git add testfile
+git commit -m "initial checkin for test file by us"
+git push origin master
+# verify at github
+
+
+
+vi .git/config
+git commit --amend --reset-author
+git config --global user.name Puneet
+
+or
+
+git config --global user.name "Puneet"
+git config --global user.mail "puneetbhatia77@gmail.com"
+
+ssh-keygen
+cat ~/.ssh/id_rsa.pub
+# and add id_rsa.pub contents to github -> settings -> ssh keys
+ssh -T git@github.com
+cd ../
+rm -rf demo/
+git clone git@github.com:puneetbhatia77/demo.git
+cd demo/
+cat .git/config    ->  check git url - git@git....
+vi testfile2
+git add testfile2
+git commit -m "initial checkin for test file 2"
+git push origin master
+# it will not ask for credentials now.
