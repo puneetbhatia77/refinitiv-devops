@@ -1,0 +1,213 @@
+https://downloads.chef.io/chefdk   (download windows version and run as administrator)
+
+
+sudo apt-get update
+sudo apt-get -y install curl
+curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -P chefdk -c stable -v 2.5.3
+
+
+mkdir ~/chef-repo
+cd ~/chef-repo
+----------------
+vi hello.rb
+# on windows say file "E:\chef-repo-test-windows\motd" do
+file '/tmp/motd' do                       
+  content 'hello world !!!'
+end
+--------------------------------------
+
+sudo chef-client --local-mode hello.rb                       # --local-mode is required else error out
+cat /tmp/motd
+
+-------------------
+vi goodbye.rb
+
+file '/tmp/motd' do
+  action :delete
+end
+---------------------------------------
+
+vi webserver.rb
+
+apt_update 'update apt cache daily' do
+  frequency 86_400
+  action :periodic
+end
+
+package 'apache2'
+
+service'apache2' do
+  supports status: true
+  action [:enable, :start]
+end
+
+file '/var/www/html/index.html' do
+  content '<html>
+  <body>
+    <h1>welcome to Chef</h1>
+  </body>
+</html>'
+end
+
+sudo chef-client --local-mode webserver.rb                 
+from windows browser,  check IP address:80                        
+# For AWS,   check IP address of EC2 instance   http://52.91.101.91/html/index.html
+---------------------------------------------------
+vi users.rb
+
+user "Add a user" do
+  home "/home/jdoe"
+  shell "/bin/bash"
+  username "jdoe"  
+end
+-----------------------------------------
+sudo chef-client --local-mode users.rb
+-------------------------------------------
+grep jdoe /etc/passwd
+sudo su -
+su jdoe
+--------------------------
+
+vi users-delete.rb
+
+user "delete a user" do
+  home "/home/jdoe"
+  shell "/bin/bash"
+  username "jdoe"
+  action:remove
+end
+
+
+-----------------------------------------
+sudo chef-client --local-mode user-delete.rb
+------------------------------------------
+
+
+cookbooks
+
+
+# from chef-repo directory, run below command
+cd ~/chef-repo
+mkdir cookbooks
+
+chef generate cookbook cookbooks/learn_chef_apache2                       
+#Berksfile : source 'https://supermarket.chef.io'
+
+chef generate template cookbooks/learn_chef_apache2 index.html   
+# index.html generates templates folder
+
+cd ~/chef-repo/cookbooks/learn_chef_apache2
+vi recipes/webserver.rb
+--------------------------------------------------------------
+#
+# Cookbook:: learn_chef_apache2
+# Recipe:: default
+#
+# Copyright:: 2018, The Authors, All Rights Reserved.
+
+apt_update 'Update the apt cache daily' do
+  frequency 86_400
+  action :periodic
+end
+
+package 'apache2'
+
+service 'apache2' do
+  supports status: true
+  action [:enable, :start]
+end
+
+template '/var/www/html/index.html' do
+  source 'index.html.erb'
+end
+-----------------------------------------------------
+
+cd ~/chef-repo/cookbooks/learn_chef_apache2
+vi templates/index.html.erb
+
+<html>
+  <body>
+    <h1>hello world from Cookbook!! </h1>
+  </body>
+</html>
+--------------------------------------------------------------------------
+
+sudo chef-client --local-mode --runlist 'recipe[learn_chef_apache2::webserver]'
+--------------------------------
+from windows browser,  check IP address:80                        
+# For AWS,   check IP address of EC2 instance   http://52.91.101.91/html/index.html
+----------------------------------
+cd ~/cookbooks/learn_chef_apache2
+vi recipes/users.rb
+
+user "Add a user" do
+  home "/home/jdoe"
+  shell "/bin/bash"
+  username "jdoe"  
+end
+----------------------------------------
+sudo chef-client --local-mode --runlist 'recipe[learn_chef_apache2::users]'
+
+--------------------------------------------------------------------------------------------------------------
+Configure Hosted chef server                
+
+Create account in https://manage.chef.io/ and create organization if does not have any. 
+Download starter kit on windows machine from that organization. 
+[Everytime you download starter kit, will create new validation key].
+
+After downloading starterkit chef-starter.zip , it will extract it into chef-repo folder.  
+For example, I am using "chef refinitiv" org so I created "E:\chef-repo-refinitiv" folder manually and downloaded chef-repo folder into it.
+
+cd ~/chef-repo                      
+cp -r cookbooks/learn_chef_apache2/ /vagrant/              
+
+#copy learn_chef_apache2 fron ubuntu machine to windows shared folder "say E:\VM\vagrant\images\u64-chef-vagrantfile"  and move it to starterkit cookbooks folder say "E:\chef-repo-refinitiv\chef-repo\cookbooks\learn_chef_apache2".
+
+E:\chef-repo-refinitiv\chef-repo>knife cookbook upload learn_chef_apache2          
+# make sure chef DK installed at windows machine from https://downloads.chef.io/chefdk
+
+E:\chef-repo-refinitiv\chef-repo>knife cookbook list       
+# it will show learn_chef_apache2 in the cookbook list at server.  Also, refresh browser to reflect the same cookbook under "chef refinitiv" organization.
+
+
+And verify in chef server (make sure to check for correct organization)  #  organization -> Policy  -> Cookbook -> content.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+END of the session
+
+-----------------------------------------------------------------------------------------------
+[Excercise for students] 
+Similarly,  you can download existing cookbook say apache2, modify default.rb  and index.html.erb and update it again.
+
+E:\chef-repo>knife cookbook site download apache2
+
+will download tgz,   untar it using tar -xzvf <.tgz> and move this to cookbooks folder
+
+
+1. Modify it by running following command         [[In case of AWS, copy EC2 instance (ubuntu) private key to E:/chef-repo-dec9/.chef folder also.]
+open E:\chef-repo-org2\cookbooks\apache2\recipes\default.rb
+
+
+apt_update 'Update the apt cache daily' do
+  frequency 86_400
+  action :periodic
+end
+
+package 'apache2'
+
+service 'apache2' do
+  supports status: true
+  action [:enable, :start]
+end
+
+template '/var/www/html/index.html' do
+  source 'index.html.erb'
+end
+
+E:\chef-repo>knife cookbook upload apache2   
+
+And verify in chef server (make sure to check for correct organization)  #  organization -> administration -> contents.
+-----------------------------------------------------------------------
+
+
