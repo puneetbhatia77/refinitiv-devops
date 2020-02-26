@@ -1,0 +1,8 @@
+Recap (Devops, VM, vagrant, CI/CD, git, Jenkins, docker)
+docker pipeline   # use jenkins VM with docker installed on it. 
+-----------------------------
+chef
+
+
+
+
