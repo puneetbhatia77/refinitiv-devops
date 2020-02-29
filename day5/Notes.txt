@@ -1,0 +1,11 @@
+docker recap (images, container, registory, docker hub)
+
+docker wordpress project (using docker compose : multi-container app)
+--------------
+
+docker limitations : no auto-orchetration 
+docker coins (configure docker coins app using docker in next session)
+
+Kubernetes basics - orchestration tool, pods, replicas, nodes, deployments etc....
+
+Install miniKube

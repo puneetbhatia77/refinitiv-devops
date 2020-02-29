@@ -1,0 +1,38 @@
+minikube VM setup [make sure CPU count should be min 2].
+
+https://kubernetes.io/docs/tasks/tools/install-kubectl/#before-you-begin
+
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+kubectl version --client
+
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube_1.6.2.deb \
+ && sudo dpkg -i minikube_1.6.2.deb
+
+Pre-req to run minikube: Install docker on VM
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update
+apt-cache policy docker-ce
+sudo apt-get install -y docker-ce
+sudo systemctl status docker
+
+sudo minikube config set vm-driver none
+sudo minikube start &    [make sure CPU count should be min 2].
+        Selecting 'none' driver from user configuration (alternates: [])
+	Running on localhost (CPUs=2, Memory=2000MB, Disk=62689MB) ..
+	Preparing Kubernetes v1.17.0 on Docker '19.03.5' ...
+	Downloading kubeadm v1.17.0
+	Downloading kubelet v1.17.0
+	Polling images ...
+	Launching Kubernetes ...
+        .....
+
+sudo minikube status
+	host: Running
+	kubelet: Running
+	apiserver: Running
+	kubeconfig: Configured
+=====================================================================
