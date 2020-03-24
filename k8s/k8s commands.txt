@@ -1,0 +1,57 @@
+kubectl
+kubectl get nodes
+kubectl get cs   or kubectl get componentstatuses
+kubectl get  -h
+kubectl config
+kubectl config current-context
+kubectl config get-contexts
+kubectl config view
+kubectl get pods
+kubectl run my-web --image=nginx --port=80
+kubectl get deployments
+kubectl get pods
+kubectl cluster-info
+kubectl expose deployment my-web --target-port=80 --type=NodePort
+kubectl get svc
+	NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+	kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP        45h
+	my-web       NodePort    10.109.91.93   <none>        80:30940/TCP   23m
+minikube ip       # if IP is 192.168.99.101 then open in browser running nginx instance : 192.168.99.101:30940  
+
+C:\Users\my com>kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+hello-minikube-5857d96c67-t9rn6   1/1     Running   1          44h
+my-web-55d4ffdb44-65kqr           1/1     Running   0          42m
+
+C:\Users\my com>kubectl exec -it my-web-55d4ffdb44-65kqr /bin/bash
+root@my-web-55d4ffdb44-65kqr:/#
+
+
+
+
+
+
+
+    
+minikube dashboard
+
+
+
+
+kubectl get deployments
+kubectl get pods   or     kubectl get po         [for all namespaces - kubectl get po --all-namespaces]
+kubectl get events
+kubectl config view
+kubectl get services
+minikube service hello-minikube
+minikube addons list
+minikube addons enable heapster
+kubectl get pod,svc -n kube-system
+
+
+clean up
+----------
+kubectl delete service hello-minikube
+kubectl delete deployment hello-minikube
+minikube stop
+minikube delete

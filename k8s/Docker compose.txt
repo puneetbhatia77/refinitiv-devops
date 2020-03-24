@@ -1,0 +1,19 @@
+git clone -b v1 https://github.com/docker-training/node-bulletin-board
+cd node-bulletin-board/
+cd bulletin-board-app/
+npm install .
+node server.js .
+localhost:8080 or <ip>:8080
+
+
+
+
+cd node-bulletin-board/bulletin-board-app/
+  224  ll
+  225  vi Dockerfile
+  226  docker image build -t bulletinboard:1.0 .
+  227  ll
+  228  docker ps
+  229  docker images
+  230  docker container run --publish 8000:8080 --detach --name bb bulletinboard:1.0
+  231  docker ps

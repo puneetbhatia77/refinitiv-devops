@@ -1,0 +1,91 @@
+https://kubernetes.io/docs/tutorials/kubernetes-basics/expose/expose-interactive/
+
+
+minikube version
+minikube start
+kubectl version
+kubectl cluster-info
+kubectl get nodes
+
+
+kubectl create deployment kubernetes-bootcamp --image=gcr.io/google-samples/kubernetes-bootcamp:v1
+kubectl get deployments
+kubectl proxy
+curl http://localhost:8001/version
+export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+echo Name of the Pod: $POD_NAME
+
+kubectl get pods
+kubectl describe pods
+kubectl proxy
+export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+echo Name of the Pod: $POD_NAME
+curl http://localhost:8001/api/v1/namespaces/default/pods/$POD_NAME/proxy/
+
+
+
+Module 4 - Expose your app publicly
+    1  sleep 1; launch.sh
+    2  kubectl get pods
+    3  kubectl get services
+    4  kubectl expose deployment/kubernetes-bootcamp --type="NodePort" --port 8080
+    5  kubectl get services
+    6  kubectl describe services/kubernetes-bootcamp
+    7  export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')
+    8  echo NODE_PORT=$NODE_PORT
+    9  curl $(minikube ip):$NODE_PORT
+   10  kubectl describe deployment
+   11  kubectl get pods -l run=kubernetes-bootcamp
+   12  kubectl get services -l run=kubernetes-bootcamp
+   13  export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+   14  echo Name of the Pod: $POD_NAME
+   15  kubectl label pod $POD_NAME app=v1
+   16  kubectl describe pods $POD_NAME
+   17  kubectl get pods -l app=v1
+   18  kubectl delete service -l run=kubernetes-bootcamp
+   19  kubectl get services
+   20  curl $(minikube ip):$NODE_PORT
+   21  kubectl exec -ti $POD_NAME curl localhost:8080
+   
+
+Module 5 - Scale up your app
+    1  sleep 1; launch.sh
+    2  kubectl get deployments
+    3  kubectl get rs
+    4  kubectl scale deployments/kubernetes-bootcamp --replicas=4
+    5  kubectl get deployments
+    6  kubectl get pods -o wide
+    7  kubectl describe deployments/kubernetes-bootcamp
+    8  kubectl describe services/kubernetes-bootcamp
+    9  export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index.spec.ports 0).nodePort}}')
+   10  echo NODE_PORT=$NODE_PORT
+   11  curl $(minikube ip):$NODE_PORT
+   12  kubectl scale deployments/kubernetes-bootcamp --replicas=2
+   13  kubectl get deployments
+   14  kubectl get pods -o wide
+
+
+Module 6 -Update your app
+   Performing a Rolling Update
+    1  sleep 1; launch.sh
+    2  kubectl get deployments
+    3  kubectl get pods
+    4  kubectl describe pods
+    5  kubectl get pods
+    6  kubectl describe services/kubernetes-bootcamp
+    7  export NODE_PORT=$(kubectl get services/kubernetes-bootcamp -o go-template='{{(index .spec.ports 0).nodePort}}')
+    8  echo NODE_PORT=$NODE_PORT
+    9  curl $(minikube ip):$NODE_PORT
+   10  kubectl rollout status deployments/kubernetes-bootcamp
+   11  kubectl describe pods
+   12  kubectl set image deployments/kubernetes-bootcamp kubernetes-bootcamp=gcr.io/google-samples/kubernetes-bootcamp:v10
+   13  kubectl get deployments
+   14  kubectl get pods
+   15  kubectl describe pods
+   16  kubectl rollout undo deployments/kubernetes-bootcamp
+   17  kubectl get pods
+   18  kubectl describe pods
+
+
+  
+

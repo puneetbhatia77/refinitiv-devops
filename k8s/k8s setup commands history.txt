@@ -1,0 +1,148 @@
+On windows
+
+https://kubernetes.io/docs/tasks/tools/install-minikube/
+
+1. Windows Installer
+To install Minikube manually on windows using Windows Installer, download minikube-installer.exe and execute the installer 
+
+2. Install kubectl from https://kubernetes.io/docs/tasks/tools/install-kubectl/ location by clicking on the link and set PATH variable in environment.
+
+3. minikube start
+4. minikube dashboard or minikube dashboard --logtostderr --v=2 [in case of proxy error]
+5. kubectl get pods   - no resources found
+6. kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
+7. kubectl get pods - 1 pod found
+------------------------------------------------------
+
+On VM (ubuntu)   
+
+
+ 1  apt-get update
+    2  apt-get install curl
+    3  apt-get install virtualbox virtualbox-ext-pack
+    4  chmod +x minikube
+    5  ll
+    6  $ curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    7  ll
+    8  $ chmod +x minikube
+    9  chmod +x minikube
+   10  mv -v minikube /usr/local/bin
+   11  $ curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl
+   12  curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl
+   13  chmod +x kubectl
+   14  minikube start
+   15  virtualbox -version
+   16  virtualbox --version
+   17  virtualbox -v
+   18  apt-get install virtualbox-dkms
+   19  apt-get install linux-headers-generic
+   20  minikube start
+   21  ll /dev/vbox*
+   22  sudo dpkg-reconfigure virtualbox-dkms
+   23  sudo dpkg-reconfigure virtualbox
+   24  sudo modprobe vboxdrv
+   25  /etc/init.d/virtualbox restart
+   26  sudo modprobe vboxdrv
+   27  sudo modprobe vboxnetflt
+   28  printf 'deb http://download.virtualbox.org/virtualbox/debian %s contrib\n' "$(lsb_release -cs)" | sudo tee /etc/apt/sources.list.d/virtualbox.list
+   29  wget -qO- https://www.virtualbox.org/download/oracle_vbox{,_2016}.asc | sudo apt-key add -
+   30  sudo apt-get purge virtualbox
+   31  sudo apt-get update
+   32  sudo apt-get install virtualbox-5.0 dkms
+   33  ll /dev/vbox*
+   34  apt-get install linux-headers-generic
+   35  /etc/init.d/virtualbox restart
+   36  apt-get install linux-headers-4.4.0-131-generic
+   37  ll /dev/vbox*
+   38  /etc/init.d/virtualbox restart
+   39  minikube start
+   40  gcc -v
+   41  sudo apt-get --reinstall install virtualbox-dkms
+sudo /sbin/rcvboxdrv setup
+   42  minikube start
+   43  ll /dev/vbox*
+   44  minikube start vmdriver=virtualbox     , fail as guset machine does not support VT-X/AMD-v.
+
+minikube config set vm-driver none
+And then install docker  < follow steps from net>
+systemctl enable docker
+systemctl start docker
+   47  minikube start or minikube start vm-driver=none
+   48  minikube start & [in case above command got stuck then run as background process].
+   49  ps -ef | grep kubectl
+   50  kubectl get pod
+   51  ps -ef | grep kubectl
+   52  kubectl get pod
+   53  ps -ef | grep kubectl
+   54  kubectl get pod
+   55  ps -ef | grep kubectl
+   56  $ kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
+   57  kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
+   58  ps -ef | grep kubectl
+   59  kubectl get pod
+   60  kubectl expose deployment hello-minikube --type=NodePort
+   61  minikube service hello-minikube --url
+   62  kubectl delete deployment hello-minikube
+   63  minikube service hello-minikube --url
+   64  kubectl delete service hello-minikube
+   65  minikube service hello-minikube --url
+   66  kubectl get pod
+   67  kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
+   68  kubectl get pod
+   69  kubectl expose deployment hello-minikube --type=NodePort --port=8080 --target-port=8080
+   70  minikube service hello-minikube --url
+   71  kubectl get svc
+   72  minikube service hello-minikube --url
+   73  kubectl get pod
+   74  nginx
+   75  apt-get install nginx
+   76  nginx
+   77  nginx service status
+   78  service nginx status
+   79  kubectl get pod
+   80  minikube service hello-minikube --url
+   81  kubectl get svc
+   82  kubectl get deployments
+   83  kubectl config view
+   84  minikube service hello-node
+   85  minikube service hello-minikube --url
+   86  kubectl delete service hello-minikube
+   87  minikube service hello-minikube --url
+   88  kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
+   89  kubectl delete deployment hello-minikube
+   90  kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=8080
+   91  kubectl expose deployment hello-minikube --type=LoadBalancer --port=8080 --target-port=8080
+   92  minikube service hello-minikube --url
+   93  kubectl get svc
+   94  kubectl get servi es
+   95  kubectl get services
+   96  minikube status
+   97  minikube service hello-minikube
+   98  minikube addons list
+   99  minikube addons enable heapster
+  100  minikube addons list
+  101  kubectl get pod,svc -n kube-system
+  102  kubectl get services
+  103  ifconfig
+  104  kubectl delete deployment hello-minikube
+  105  kubectl delete service hello-minikube
+  106  kubectl run hello-minikube --image=gcr.io/google_containers/echoserver:1.4 --port=80
+  107  kubectl expose deployment hello-minikube --type=NodePort --port=80 --target-port=80
+  108  kubectl get services
+  109  minikube dashboard
+  110  kubectl get events
+  111  kubectl config view
+  112  kubectl get services
+  113  minikube service hello-minikube
+  114  kubectl get services
+  115  minikube service hello-minikube
+  116  history
+
+
+
+
+kubectl expose deployment hello-minikube --type=NodePort --port=8080 --target-port=8080
+
+
+------------------------------------------------------
+

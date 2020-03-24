@@ -1,0 +1,560 @@
+What is kubernetes?
+Kubernetes is a portable, extensible, open-source platform for managing workloads.
+It is a managed, production-ready environment for deploying containerized applications.
+It is a container orchestrator
+Kubernetes is a system for automating deployment, scheduling and scaling (container instances) of containerized applications
+
+Application containerization - OS level virtualization to deploy and run distributed application.
+Multiple isolated applications or services run on a single host and access the same OS krnel
+
+How it works? - include the runtime components (image)
+
+Container engine - deploying images on host
+
+The oldest way was applications on host (entangling with host OS and infrastructure)
+
+The older way(VMs) was heavyweight, non-portable and relies on OS package manager
+
+The new way (containers) is small, fast and portable across clouds and OS distributions.
+
+Benefits
+1. Efficiency for memory, CPU and storage.
+2. Portability.
+Drawbacks
+1.Lack of isolation from core OS
+2. No protection or lack of security
+
+Kubernetes vs Docker (Swarm)
+Kubernetes is a container orchestration solution.
+Orchestration - execution of a defined workflow
+
+Kubernetes, Docker Swarm, Mesos DB/OS, Titus
+
+Kubernetes provides a container-centric management environment
+Platform as a Service(PaaS) - AWS Elastic Beanstalk, Microsoft Azure, Heroku
+
+
+Features provided (container level) - deployment, scaling, load balancing, logging, monitoring
+Supported workloads - stateless, stateful, data-processing
+(CI/CD) Continuous Integration, Delivery and Deployment
+Features not provided (application lvel) - middleware, data processing frameworks, databases, caches, cluster storage systems
+
+Kubernetes means pilot, governor    K8s
+
+Master components - control plane, making global decisions, detect and respond to cluster events
+1. kube-apiserver - front-end for control plane
+2. etcd - key value store for all cluster data
+3. kube-scheduler - watches newly created pods and selects a node for them to run on
+4. kube-controller-manager - runs controllers. controllers are compiled together and run as a single process
+	Types of controllers include -
+		i) Node controller
+		ii) Replication controller
+		iii) Endpoints controller
+		iv) Service account & token controllers
+5. cloud-controller-manager - runs controllers that interact with underlying cloud provider
+
+containers -> pods -> nodes -> cluster -> master components
+
+
+Networking
+1. containers and pods
+2. services - abstraction layer for pods to be ephemeral
+3. ingress and traffic from our cluster
+
+Pod - consists of one or more containers that are co-located on the same host and share same network stack and volumes. Pod is ephemeral
+
+Intra-pod communication - shared network stack
+Inter-pod communication (east-west traffic)
+Outside world communication (north-south traffic)
+
+Network stack - means containers in a pod can reach each other on localhost
+http://localhost:80
+
+eth0 - physical network interface of node
+
+docker0 - bridge
+
+veth0 - virtual network interface for container
+
+Overlay network <-> pod network
+
+ipv4 - 172.17.0.0/24 (32-bit)
+cidr - cross interdomain routing
+
+10.2.1.0
+00001010.00000010.00000001.00000000
+
+10.0.0.0/14
+10.3.240.0/20
+
+gcloud container clusters describe <cluster>
+
+Requirements for the proxy :-
+1. It is durable
+2. Resistant to failure
+3. Have a list of healthy servers it can forward requests to 
+
+DNS - Domain Name Service
+
+Kubernetes uses linux kernel feature called netfilter
+And user space interface to netfilter called iptables
+
+Netfilter is a rules-based packet-processing engine
+Netfilter matches packets against some rules and it takes specified actions
+Netfilter is a kernel space proxy.
+
+OSI model layers :-
+Application
+Presentation
+Session
+Transport
+Network
+Data link
+Phyical
+
+30000-32767 -> 2768 ports
+
+Ingress- Setting up a load balancer to handle multiple backend services
+
+Pods - container for containers. Inside a pod, containers share same resources and local network. They can communicate but they still maintain isolation. At a time, replicas of your pod should be running to allow load balancing, failure resistance
+
+Node - Smallest unit of computing hardware. Simply viewing each machine as a set of CPU and RAM resources
+Node COmponents - 
+1. kubelet - makes sure that containers run inside a pod
+2. kube-proxy - enables k8s service abstraction by maintaining network rules and connection forwarding
+3. Container Runtime
+
+Cluster - nodes pool their resources together to make a big powerful machine. It intelligently distributes work to individual nodes
+
+Persistent - plugging cloud drives or external hard disk to the cluster to store data permanently
+
+1. Install Google Cloud SDk
+2. Kubernetes cmd - gcloud components install kubectl
+3. Install Docker or Docker Toolbox
+4. Install git (git-scm.com)
+
+1. git clone <url>
+2. cd <dir>
+3. gcloud auth configure-docker (use once only)
+
+Step 1 -> Build docker container image
+
+4. docker build -t name:tag
+docker build -t gcr.io/k8stest2-223806/hello-app:v1 .
+
+5. docker images
+
+Step 2 -> Upload the container image to GCR (gcr means google container registry)
+
+docker push gcr.io/k8stest2-223806/hello-app:v1
+
+Step 3 -> Create a container cluster
+gcloud container clusters create hello-cluster --num-nodes=3 --zone=asia-south1-a
+
+gcloud compute instances list
+
+((gcloud container clusters get-credentials hello-cluster)) 
+
+gcloud compute regions list
+gcloud compute zones list
+
+Step 4 -> Deploy our application
+
+kubectl run hello-web2 --image=gcr.io/k8stest2-223806/hello-app:v1 --port 8080
+(run <-> create deployment) Deployment manages replicas of our application, schedules them to run on nodes
+kubectl get pods
+
+
+Step 5-> Exposing the application on internet
+
+kubectl expose deployment hello-web2 --type=LoadBalancer --port 80 --target-port 8080
+(expose <-> create service) Service providing networking and IP support to our appn's pods
+
+kubectl get service
+
+Open browser -> http://<external-ip>
+
+Step 6 -> Scale up our application
+
+kubectl scale deployment hello-web2 --replicas=3
+
+kubectl get deployment hello-web2
+
+kubectl get pods
+
+(scale command adjusts capacity of our application. LoadBalancer routes traffic to new replicas immediately
+
+Step 7 -> Deploy a new version of your app
+
+kubectl set image <type>/<name> name=new image
+kubectl set image deployment/hello-web2 hello-web2=gcr.io/k8stest2-223806/hello-app:v2
+
+Open browser -> http://<external-ip>
+
+Step 8 -> Cleaning up
+
+i) Delete the service
+kubectl delete service hello-web2
+
+ii) Verifying that LoadBalancer (service) has been deleted
+gcloud compute forwarding-rules list
+
+iii)Delete the container cluster
+gcloud container clusters delete hello-cluster --zone=asia-south1-a
+
+Misc commands -
+1. gcloud config set project k8stest2-223806
+2. gcloud config set compute/zone us-central1-b
+3. Run your container locally
+	docker run --rm -p 8080:8080 gcr.io/k8stest2-223806/hello-app:v1
+	then	
+	Preview on port 8080 button
+	or
+	open a new shell window -> curl http://localhost:8080
+
+
+K8s deployment strategies
+1. Recreate -> Terminate the old version and release the new one
+	Best for development environment
+Pro : Application state is entirely renewed
+Con : Downtime that depends on both shutdown and boot duration of the application
+
+spec:
+	replicas:3
+	strategy:
+		type:Recreate
+
+2. Ramped -> Release a new version in a rolling update fashion, one after the other
+	Best for slow rollout
+Pro:Version is released slowly
+Convenient for stateful applications so that they can handle rebalancing of data
+Con:Rollout/rollback can take some time
+No control over traffic
+
+
+
+spec:
+	strategy:
+		type:RoliingUpdate
+		rollingUpdate:
+			maxSurge:2    #how many pods we can add at a time
+			maxUnavailable:0 
+
+
+
+3. Blue/green -> Release a new version alongside the older version and then switch traffic
+	Best to avoid versioning issues
+Pro:Version is released instantly
+Change the entire cluster state in a go
+Con:Requires the double resources
+Proper testing should be done before switching the traffic
+Handling stateful applications can be hard
+
+
+
+selector:
+	version: v2.0.0
+
+
+
+
+
+
+4. Canary -> Release a new version to a subset of users, then we proceed to a full rollout
+	Best for consumer testing
+	HAproxy, Linkerd
+
+
+
+spec:
+	replicas:3
+
+
+
+spec:
+	replicas:1
+
+
+
+
+5. A/B testing -> Release a new version to a subset of users but in a precise way(using Http headers and cookies). A/B testing is really a technique for business decisions based on statistics. Istio
+Pro: Several versions run in parallel
+Con:You have to set up additional tools
+Hard to troubleshoot
+
+
+
+route:
+-tags:
+	version:v1.0.0
+	weight:90
+-tags:
+	version:v2.0.0
+	weight:10
+
+
+
+Common issues:
+Pods in Pending, CrashLoopBackOff, Waiting, ErrImagePull
+non-responsive pods containers
+Difficulty in finding external IP
+
+Pod status is Pending, CrashLoopBackOff
+Typically because of insufficent CPU or memory resources or absence of volume provider
+kubectl get pods -> Show the Pod_uid
+kubectl describe pod pod_uid
+
+Pod status show ErrImagePull, ImagePullBackOff
+kubectl get pods
+kubectl describe pod pod_uid
+docker pull images
+
+
+Unable to find your nodes
+kubectl get nodes -> server doesnt have a resource
+Occurs because authentication credentials are not correct
+
+Difficulty in finding external IP
+minikube ip
+kubectl get nodes -o yaml
+
+
+Pod is running but not responding
+Occurs because of incorrect config or insufficient storage
+ps
+Status  Restarts  Ready
+
+
+Kubernetes with KOPS on AWS
+
+WSL -> Windows Subsytem for Linux
+
+Prerequisite for Windows : Install Ubuntu 
+
+Step 1 -> Create an AWS account (www.aws.amazon.com/free)
+
+Step 2 -> Install python 
+	sudo apt-get install python2.7
+
+Step 3 -> Install pip
+	sudo apt-get install python-pip
+	If error comes -> (sudo apt-get update && sudo apt-get -y update) then use (sudo apt-get install python-pip)
+	pip -V
+
+Step 4 -> Install AWS CLI
+	pip install awscli --upgrade --user
+	aws --version
+
+	if error comes -> which python
+			ls -al /usr/bin/python
+			ls -a    				(.local, .profile)
+			export PATH=~/.local/bin
+			source ~/.profile
+
+	aws --version
+
+Step 5 -> Configuration
+	i) Create a new user on IAM Management Console
+	ii) Give permissions -
+		1. AmazonEC2FullAccess
+		2. AmazonRoute53FullAccess
+		3. AmazonS3FullAccess
+		4. AmazonVPCFullAccess
+		5. IAMFullAccess
+
+	aws configure
+	AWS Access Key ID [none]: AKIAJM5XLPU4JYFUVVFA
+	AWS Secret Access Key [none]: ***********************
+	Default region name [none]:us-east-2
+	Default output format [None]:
+
+Step 6 -> Create an S3 bucket
+	aws s3api create-bucket --bucket anmoll-kops-state-store --region=us-west-2 --create-bucket-con
+	figuration LocationConstraint=us-west-2
+
+Step 7 -> Allow versioning of our bucket
+	aws s3api put-bucket-versioning --bucket anmoll-kops-state-store --versioning-	configuration Status=Enabled
+
+Step 8 optional -> Store our cluster name as well as bucket name locally
+	export KOPS_CLUSTER_NAME=anmoll.k8s.local
+	export KOPS_STATE_STORE=s3://anmoll-kops-state-store
+
+Step 9 -> Create config file for cluster
+	kops create cluster --node-count=2 --node-size=t2.medium --zones=us-east-1a --name=${KOPS_CLUSTER_NAME} 	--ssh-public-key {key} --cloud="aws"
+	kops edit cluster --name=${KOPS_CLUSTER_NAME} 
+	(It will open vi editor, to exit vi editor press Esc then :q! then press Enter)
+
+To create sshkey -> kops create secret ssh-key {key}
+			OR
+		ssh-keygen
+
+For help regarding clusters  -> kops create cluster --help
+
+Step 10 -> Create the cluster
+	kops update cluster --name=${KOPS_CLUSTER_NAME} --yes
+	kops validate cluster
+
+Step 11 -> deploy Kubernetes dashboard (web ui)
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+
+Install kubectl
+kubectl cluster-info
+kubectl cluster-info dump
+
+kops get secrets kube --type secret -oplaintext       //to extract password from kubernetes for dashboard
+kops get secrets admin --type secret -oplaintext      //to extract secret token
+kubectl cluster-info
+
+kubectl proxy
+Open the browser -> http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy
+Userid as admin
+
+Components of Cloud Controller Manager
+
+1. Cloud-dependent controller loops that have been taken away from KCM
+		Node controller
+		Route controller
+		Service controller
+		PersistentVolumeLabels controller
+
+	Node Controller
+	1. Initialize a node with cloud specific zones/ regions and cloud-specific instance types such as type, 	size
+	2. Obtain the node's ip adresses and hostname
+	3. If node becomes unresponsive, check the cloud whether node has been deleted or some other error 	occured
+
+	Route controller
+	It is responsible for configuring routes in the cloud (containers running on different nodes but from 	same cluster can talk to each other
+
+	Service Controller
+	It is responsible for listening to events - create, update, delete.
+	It configures cloud LoadBalancer
+
+	PersistentVolumeLabels controller
+	Automatically applies labels on volumes
+
+2. kubelet
+
+Prior to CCM, kubelet was responsible for Initialize a node with cloud specific zones/ regions and cloud-specific instance types such as type, 	size
+
+3. kube-apiserver
+Was responsible for PersistentVolumeLabels controller
+
+Minikube - Single-node kubernetes version running locally on our machine
+
+1. VT-x or AMD-v Virtualization enabled in BIOS
+
+2. Install hypervisor
+	macOS : VirtualBox, VMWareFusion, HyperKit
+	linux : VirtualBox, KVM  (minikube start --vm-driver=none)
+	windows : VirtualBOx, Hyper-v
+
+3. Install kubectl
+	Google Cloud SDK
+
+4. Install minikube and set path
+
+5. minikube start
+
+If you face problem in running minikube go to your home directory -> delete .minikube file -> close and open cmd again -> run the command again (minikube start)
+
+6. Create docker image
+	docker build -t <name-of-image>:v1 .
+
+7.kubectl run hello-minikube --image=<name-of-image>:v1 --port=8080        //alternative image -> k8s.gcr.io/echoserver:1.10
+
+8. kubectl expose deployment hello-minikube --type=NodePort
+
+9. kubectl get pods
+
+10. minikube service hello-minikube --url
+	<IP address> -> Browser
+	OR
+	curl <Ip address)
+
+To install curl -> choco install curl
+
+11. kubectl delete services hello-minikube
+
+12. kubectl delete deployment hello-minikube
+
+13. minikube stop (stop minikube but save cluster state and stop VM also)
+
+14. minikube delete (stop minikube but not saves cluster state) //if you use this directly VM will become orphaned
+
+Helm (client side)
+Tiller (server side)
+
+1. Install helm
+
+2. helm init
+
+3. helm version
+
+4. tiller
+
+5. helm repo update
+
+Use some package or a chart -
+
+1. helm install stable/mysql
+Name - cold-seastar , lame-cat
+
+2. helm inspect stable/mysql
+
+3. helm ls
+
+4. helm list
+
+5. helm delete lame-cat
+
+6. helm status lame-cat
+
+7. helm rollback lame-cat 1
+
+Create our own chart
+
+1. helm create mychart
+
+2. helm install --dry-run --debug ./mychart2
+
+3. helm install --dry-run --debug ./mychart2 --set service.internalPort=8080
+
+4. helm install --name myexample ./mychart2 --set service.type=NodePort
+	Notes: 1. export node_ip = ?
+		2. export node_port = ?
+		3. http://127.1.10.1:83421
+
+Helm - application package manager
+	-runs on top of kubernetes (Azure Resource Manager, Amazon Machine Images)
+	-describes application structure using helm-charts
+	-Charts of all images are stored in Helm Workspace
+
+Why is Helm important?
+It helps us manage, update and scale microservices easily and individually
+
+-Find and use popular packaged as charts
+-Share your own applications as charts
+-Create your reproducible builds of your applications
+-Intelligently manage our k8s objects definitions
+-Manage releases of Helm packages
+
+Helm uses a packaging format called as charts. 
+A chart is a manifest of files that describer K8s resources.
+
+Kompose = Kubernetes + Docker Compose
+
+1. kompose convert -f docker-compose.yaml (to convert docker compose resource into k8s resource)
+
+2. kompose up
+
+3. kubectl get pods
+
+4. kubectl get deployment
+
+5. kubectl get service
+
+6. kubectl get pvc
+
+
+Please take this survey:)
+https://goo.gl/forms/QvqfNexKzWiWLHLw2

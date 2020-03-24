@@ -1,0 +1,68 @@
+
+
+
+apt-get update 
+
+curl -LO https://github.com/kubernetes/kops/releases/download/$(curl -s https://api.github.com/repos/kubernetes/kops/releases/latest | grep tag_name | cut -d '"' -f 4)/kops-linux-amd64
+chmod +x kops-linux-amd64
+sudo mv kops-linux-amd64 /usr/local/bin/kops
+
+curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+kubectl version --client
+
+
+
+
+apt-get install awscli -y
+aws --version
+
+
+Configuration
+	i) Create a new user on IAM Management Console
+	ii) Give permissions -
+		1. AmazonEC2FullAccess
+		2. AmazonRoute53FullAccess
+		3. AmazonS3FullAccess
+		4. AmazonVPCFullAccess
+		5. IAMFullAccess
+
+aws configure
+	AWS Access Key ID [none]: AKIARD5Z27VJOY43LGNO
+	AWS Secret Access Key [none]: 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
+	Default region name [none]:
+	Default output format [None]:
+ 	
+
+aws s3api create-bucket --bucket puneet-kops-state-store --region us-east-1
+aws s3api put-bucket-versioning --bucket puneet-kops-state-store  --versioning-configuration Status=Enabled
+
+
+export KOPS_CLUSTER_NAME=puneet.k8s.local
+export KOPS_STATE_STORE=s3://puneet-kops-state-store
+
+kops create cluster --node-count=2 --node-size=t2.small --zones=us-east-1a --name=${KOPS_CLUSTER_NAME} 
+###if ssh key errot then run below commands
+	ssh-keygen
+	kops create secret --name puneet.k8s.local sshpublickey admin -i ~/.ssh/id_rsa.pub
+
+kops edit cluster
+
+kops update cluster --name=${KOPS_CLUSTER_NAME} --yes
+kops validate cluster
+kubectl get nodes
+
+
+deploy Kubernetes dashboard (web ui)
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc2/aio/deploy/recommended.yaml
+
+        kops get secrets kube --type secret -oplaintext       //to extract password from kubernetes for dashboard
+        kops get secrets admin --type secret -oplaintext      //to extract secret token
+
+kubectl config view
+
+
+http://192.168.56.101:31820/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#!/login
+

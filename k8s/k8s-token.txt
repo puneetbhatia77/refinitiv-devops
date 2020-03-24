@@ -1,0 +1,5 @@
+kubeadm join 192.168.56.101:6443 --token ycoqgc.zy9x8wqvac01qq8i \
+    --discovery-token-ca-cert-hash sha256:0155b6e63d22d11f08ce9e7d4683dd84987e1a20687fdca9ed020988e9deb6e6
+
+
+https://192.168.56.101:6443/api/v1/namespaces/kubernetes-dashboard/services/kube-dns:dns/proxy

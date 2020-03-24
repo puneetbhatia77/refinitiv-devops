@@ -1,0 +1,141 @@
+# use minikube VM
+
+LAB - Dockercoins using Docker
+
+Docker Compose installation steps       :  https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-16-04
+
+sudo curl -L https://github.com/docker/compose/releases/download/1.18.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+
+
+git clone https://github.com/puneetbhatia77/container.training.git
+
+cd container.training/
+
+cd dockercoins/
+
+# will take some time to build 
+docker-compose up            
+docker-compose up -d
+docker-compose ps
+docker-compose scale worker=3
+
+# can only scale up upto some limit
+docker-compose scale worker=8           
+docker-compose scale worker=20
+top
+docker-compose scale worker=1
+
+docker-compose ps
+vi rng/Dockerfile
+vi hasher/Dockerfile
+ll
+vi webui/Dockerfile
+vi docker-compose.yml
+apt install httping
+httping localhost:8001         # rng is the bottleneck, hence slow
+httping localhost:8002
+httping localhost:8000
+vi docker-compose.yml
+
+
+docker-compose down
+
+
+
+
+LAB - Dockercoins using Kubernetes
+
+
+sudo minikube start             #wait for some time after running this command
+kubectl cluster-info
+kubectl get all
+
+kubectl get node
+kubectl get no
+kubectl get node -o wide
+kubectl get node -o yaml
+kubectl get node -o json
+# kubectl explain <resource type>
+kubectl explain no
+kubectl explain no.spec
+kubectl explain no --recursive
+kubectl explain Endpoints | more
+kubectl get po
+kubectl get pod
+kubectl get pods
+kubectl get ns
+kubectl get ns -A
+kubectl get pods -A
+kubectl get pods --all-namespaces
+kubectl get pods -n kube-system
+kubectl get pods -n kube-public
+kubectl get configmaps -n kube-system
+kubectl get configmaps -n kube-public cluster-info
+kubectl cluster-info
+kubectl get svc
+kubectl run pingpong --image alpine ping goo.gl    # create deployment -> replicaset -> pod
+kubectl get all                          
+kubectl logs deploy/pingpong
+kubectl scale deploy/pingpong --replicas 3
+kubectl logs deploy/pingpong
+kubectl get all
+
+kubectl delete pod pingpong-c4d45fccc-lw5fw pingpong-c4d45fccc-tntdd
+
+kubectl run hello-nginx --image hello-nginx            # error pulling image
+kubectl run my-nginx --image nginx		       # works fine
+
+kubectl get pods -A
+#also check dashboard, pods are getting recreated.
+---------------------------------------------------------------
+
+Diff between two LAB works - 
+Docker 		vs 	Kubernetes
+No auto scaling		auto scaling
+No orchestration	orchestration
+No self healing		self healing
+Manual			Automated
+
+=========================================================================================
+
+----------------------------------------------------
+# no need to manual steps above
+
+kubectl apply -f https://goo.gl/Qamqab
+or
+kubectl apply -f https://goo.gl/CHsLTA
+
+kubectl -n kube-system edit service kubernetes-dashboard
+
+Change ClusterIP to NodePort, save, and exit
+
+#Reload the dashboard
+
+#scale
+
+kubectl scale deploy/worker --replicas=10
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
