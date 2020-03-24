@@ -30,8 +30,8 @@ Configuration
 		5. IAMFullAccess
 
 aws configure
-	AWS Access Key ID [none]: AKIARD5Z27VJOY43LGNO
-	AWS Secret Access Key [none]: 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
+	AWS Access Key ID [none]: 
+	AWS Secret Access Key [none]: 
 	Default region name [none]:
 	Default output format [None]:
  	
